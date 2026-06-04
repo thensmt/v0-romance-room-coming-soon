@@ -1,16 +1,133 @@
+"use client"
+
+import { useState } from "react"
+import { Instagram } from "lucide-react"
+
 export default function Home() {
+  const [email, setEmail] = useState("")
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [errorMessage, setErrorMessage] = useState("")
+
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setErrorMessage("")
+
+    if (!email.trim()) {
+      setStatus("error")
+      setErrorMessage("Please enter your email address.")
+      return
+    }
+
+    if (!validateEmail(email)) {
+      setStatus("error")
+      setErrorMessage("Please enter a valid email address.")
+      return
+    }
+
+    setStatus("loading")
+
+    try {
+      const response = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Something went wrong. Please try again.")
+      }
+
+      setStatus("success")
+      setEmail("")
+    } catch {
+      setStatus("error")
+      setErrorMessage("Something went wrong. Please try again.")
+    }
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center font-sans">
-      <main className="flex w-full max-w-3xl flex-col items-center gap-8 px-6 py-16 text-center sm:items-start sm:text-left">
-        <div className="flex flex-col gap-4">
-          <h1 className="text-4xl font-bold tracking-tight">
-            the romance room coming soon
-          </h1>
-          <p className="max-w-md text-lg text-muted-foreground">
-            To get started, send a prompt or modify this page directly.
+    <main className="flex min-h-screen flex-col items-center justify-center px-6 py-12">
+      <div className="flex w-full max-w-md flex-col items-center gap-8 text-center">
+        {/* Eyebrow */}
+        <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.25em] text-rose">
+          <span className="text-rose">&#9679;</span>
+          The Romance Room
+        </p>
+
+        {/* Headline */}
+        <h1 className="font-serif text-4xl font-normal leading-tight tracking-tight text-foreground sm:text-5xl text-balance">
+          Be the first{" "}
+          <span className="italic text-gold">to know.</span>
+        </h1>
+
+        {/* Subline */}
+        <p className="max-w-sm text-base leading-relaxed text-muted-foreground text-pretty">
+          Something intimate is coming. Join the list, and you&apos;ll be the first to hear when the next Romance Room is revealed.
+        </p>
+
+        {/* Divider */}
+        <span className="text-rose text-lg">&#10022;</span>
+
+        {/* Email Signup */}
+        {status === "success" ? (
+          <p className="text-sm text-gold">
+            You&apos;re on the list &#9829; — watch your inbox.
           </p>
-        </div>
-      </main>
-    </div>
-  );
+        ) : (
+          <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3 sm:flex-row sm:gap-2">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                if (status === "error") setStatus("idle")
+              }}
+              placeholder="your@email.com"
+              className="flex-1 rounded-md border border-border bg-input px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition-colors"
+              disabled={status === "loading"}
+            />
+            <button
+              type="submit"
+              disabled={status === "loading"}
+              className="rounded-md bg-gradient-to-r from-gold to-rose px-6 py-3 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-50"
+            >
+              {status === "loading" ? "..." : "Keep me posted"}
+            </button>
+          </form>
+        )}
+
+        {/* Error Message */}
+        {status === "error" && errorMessage && (
+          <p className="text-sm text-destructive">{errorMessage}</p>
+        )}
+
+        {/* Fine Print */}
+        <p className="text-xs text-muted-foreground">
+          Only Romance Room news. No spam. &#9829;
+        </p>
+
+        {/* Footer */}
+        <footer className="mt-8 flex flex-col items-center gap-4">
+          <a
+            href="https://instagram.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+            aria-label="Follow us on Instagram"
+          >
+            <Instagram className="h-5 w-5" />
+          </a>
+          <p className="text-xs text-muted-foreground">
+            &copy; 2026 The Romance Room
+          </p>
+        </footer>
+      </div>
+    </main>
+  )
 }
