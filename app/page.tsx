@@ -43,6 +43,11 @@ export default function Home() {
         throw new Error("Something went wrong. Please try again.")
       }
 
+      // Fire GA4 event on successful signup
+      if (typeof window !== 'undefined' && (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag) {
+        (window as unknown as { gtag: (...args: unknown[]) => void }).gtag('event', 'sign_up', { method: 'waitlist' })
+      }
+
       setStatus("success")
       setEmail("")
     } catch {
@@ -62,13 +67,13 @@ export default function Home() {
 
         {/* Headline */}
         <h1 className="font-serif text-4xl font-normal leading-tight tracking-tight text-foreground sm:text-5xl text-balance">
-          Be the first{" "}
-          <span className="italic text-gold">to know.</span>
+          The doors{" "}
+          <span className="italic text-gold">open soon.</span>
         </h1>
 
         {/* Subline */}
         <p className="max-w-sm text-base leading-relaxed text-muted-foreground text-pretty">
-          Something intimate is coming. Join the list, and you&apos;ll be the first to hear when the next Romance Room is revealed.
+          Something intimate is in the works — a place of our own, where The Romance Room finally lives online. Join the list and be the first through the door when it opens.
         </p>
 
         {/* Divider */}
@@ -115,7 +120,7 @@ export default function Home() {
         {/* Footer */}
         <footer className="mt-8 flex flex-col items-center gap-4">
           <a
-            href="https://instagram.com"
+            href="https://www.instagram.com/theromanceroomlive"
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground transition-colors hover:text-foreground"
