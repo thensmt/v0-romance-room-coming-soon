@@ -115,7 +115,7 @@ export default function Home() {
         {/* Footer */}
         <footer className="mt-8 flex flex-col items-center gap-4">
           <a
-            href="https://instagram.com"
+            href="https://www.instagram.com/theromanceroomlive"
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground transition-colors hover:text-foreground"
