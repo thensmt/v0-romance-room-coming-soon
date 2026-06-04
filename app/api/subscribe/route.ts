@@ -1,45 +1,35 @@
+// app/api/subscribe/route.ts
 import { NextResponse } from "next/server"
 
-export async function POST(request: Request) {
+export const runtime = "nodejs"
+
+export async function POST(req: Request) {
   try {
-    const { email } = await request.json()
+    const { email } = await req.json()
+    const normalized = String(email ?? "").trim().toLowerCase()
 
-    if (!email || typeof email !== "string") {
-      return NextResponse.json(
-        { error: "Email is required" },
-        { status: 400 }
-      )
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
+      return NextResponse.json({ error: "Please enter a valid email." }, { status: 400 })
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: "Invalid email address" },
-        { status: 400 }
-      )
-    }
+    const res = await fetch(`${process.env.SUPABASE_URL}/rest/v1/waitlist`, {
+      method: "POST",
+      headers: {
+        apikey: process.env.SUPABASE_ANON_KEY as string,
+        Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify({ email: normalized, source: "coming_soon" }),
+    })
 
-    // TODO: Save email to Mailchimp
-    // Example:
-    // const mailchimp = require("@mailchimp/mailchimp_marketing")
-    // mailchimp.setConfig({
-    //   apiKey: process.env.MAILCHIMP_API_KEY,
-    //   server: process.env.MAILCHIMP_SERVER_PREFIX,
-    // })
-    // await mailchimp.lists.addListMember(process.env.MAILCHIMP_LIST_ID, {
-    //   email_address: email,
-    //   status: "subscribed",
-    // })
+    // 201 = added. 409 = already on the list. Both are a "success" to the visitor.
+    if (res.ok || res.status === 409) return NextResponse.json({ ok: true })
 
-    console.log("New subscriber:", email)
-
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error("Subscribe error:", error)
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
+    console.error("Supabase insert failed:", res.status, await res.text())
+    return NextResponse.json({ error: "Something went wrong. Try again." }, { status: 500 })
+  } catch (err) {
+    console.error(err)
+    return NextResponse.json({ error: "Something went wrong. Try again." }, { status: 500 })
   }
 }
