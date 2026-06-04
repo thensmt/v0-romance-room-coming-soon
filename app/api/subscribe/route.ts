@@ -15,8 +15,8 @@ export async function POST(req: Request) {
     const res = await fetch(`${process.env.SUPABASE_URL}/rest/v1/waitlist`, {
       method: "POST",
       headers: {
-        apikey: process.env.SUPABASE_ANON_KEY as string,
-        Authorization: `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+        apikey: process.env.SUPABASE_SERVICE_ROLE_KEY as string,
+        Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
         "Content-Type": "application/json",
         Prefer: "return=minimal",
       },
