@@ -43,6 +43,11 @@ export default function Home() {
         throw new Error("Something went wrong. Please try again.")
       }
 
+      // Fire GA4 event on successful signup
+      if (typeof window !== 'undefined' && (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag) {
+        (window as unknown as { gtag: (...args: unknown[]) => void }).gtag('event', 'sign_up', { method: 'waitlist' })
+      }
+
       setStatus("success")
       setEmail("")
     } catch {
