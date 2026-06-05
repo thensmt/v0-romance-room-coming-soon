@@ -23,8 +23,10 @@ export async function POST(req: Request) {
       body: JSON.stringify({ email: normalized, source: "coming_soon" }),
     })
 
-    // 201 = added. 409 = already on the list. Both are a "success" to the visitor.
-    if (res.ok || res.status === 409) return NextResponse.json({ ok: true })
+    // 201 = new lead. 409 = already on the list. Both succeed for the visitor,
+    // but only a new insert is a real signup for analytics.
+    if (res.ok) return NextResponse.json({ ok: true, isNew: true })
+    if (res.status === 409) return NextResponse.json({ ok: true, isNew: false })
 
     console.error("Supabase insert failed:", res.status, await res.text())
     return NextResponse.json({ error: "Something went wrong. Try again." }, { status: 500 })
