@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 
 
 export default function Home() {
@@ -149,8 +150,16 @@ export default function Home() {
               <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
             </svg>
           </a>
-          <p className="text-xs text-muted-foreground">
-            &copy; 2026 The Romance Room
+          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span>&copy; 2026 The Romance Room</span>
+            <span aria-hidden="true">&middot;</span>
+            <Link href="/privacy" className="transition-colors hover:text-foreground">
+              Privacy
+            </Link>
+            <span aria-hidden="true">&middot;</span>
+            <Link href="/terms" className="transition-colors hover:text-foreground">
+              Terms
+            </Link>
           </p>
         </footer>
       </div>
