@@ -5,11 +5,11 @@ export const runtime = "nodejs"
 
 export async function POST(req: Request) {
   try {
-    const { email, company } = await req.json()
+    const { email, hp_field } = await req.json()
 
     // Honeypot: real users never fill this. If present, fake success and write nothing.
     // isNew: false ensures the client's GA4 sign_up gate does not fire for bots.
-    if (typeof company === "string" && company.trim() !== "") {
+    if (typeof hp_field === "string" && hp_field.trim() !== "") {
       return NextResponse.json({ ok: true, isNew: false })
     }
 

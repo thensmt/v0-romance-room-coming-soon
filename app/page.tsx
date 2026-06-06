@@ -6,7 +6,7 @@ import Link from "next/link"
 
 export default function Home() {
   const [email, setEmail] = useState("")
-  const [company, setCompany] = useState("")
+  const [hpField, setHpField] = useState("")
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState("")
 
@@ -38,7 +38,7 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, company }),
+        body: JSON.stringify({ email, hp_field: hpField }),
       })
 
       if (!response.ok) {
@@ -107,13 +107,13 @@ export default function Home() {
             />
             {/* Honeypot — hidden off-screen to trap bots; not for real users */}
             <div aria-hidden="true" className="absolute left-[-9999px] top-auto h-0 w-0 overflow-hidden">
-              <label htmlFor="company">Company</label>
+              <label htmlFor="hp_field">Leave this field empty</label>
               <input
-                id="company"
-                name="company"
+                id="hp_field"
+                name="hp_field"
                 type="text"
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
+                value={hpField}
+                onChange={(e) => setHpField(e.target.value)}
                 tabIndex={-1}
                 autoComplete="off"
               />
